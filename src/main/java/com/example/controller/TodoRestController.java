@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 @RequestMapping("/todos")
 @RestController
@@ -21,11 +22,14 @@ public class TodoRestController {
 
 	@GetMapping
 	ResponseEntity<Flux<Todo>> getTodos() {
-		Flux<Todo> flux = Flux.create(fluxSink -> {
+
+		Flux<Todo> flux = Flux.push(fluxSink -> {
 			mapper.collect(resultContext -> fluxSink.next(resultContext.getResultObject()));
 			fluxSink.complete();
 		});
-		return ResponseEntity.ok().contentType(MediaType.APPLICATION_STREAM_JSON).body(flux);
+
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_STREAM_JSON)
+				.body(flux.publishOn(Schedulers.elastic()).subscribeOn(Schedulers.elastic()));
 	}
 
 }

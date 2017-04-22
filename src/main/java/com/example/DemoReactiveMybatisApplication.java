@@ -6,9 +6,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-
-import java.time.Duration;
 
 @SpringBootApplication
 public class DemoReactiveMybatisApplication implements CommandLineRunner {

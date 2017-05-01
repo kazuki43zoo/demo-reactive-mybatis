@@ -1,12 +1,12 @@
 package com.example.controller;
 
-import com.example.domain.Todo;
-import com.example.mapper.TodoMapper;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.domain.Todo;
+import com.example.mapper.TodoMapper;
+
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -21,15 +21,9 @@ public class TodoRestController {
 	}
 
 	@GetMapping
-	ResponseEntity<Flux<Todo>> getTodos() {
-
-		Flux<Todo> flux = Flux.push(fluxSink -> {
-			mapper.collect(resultContext -> fluxSink.next(resultContext.getResultObject()));
-			fluxSink.complete();
-		});
-
-		return ResponseEntity.ok().contentType(MediaType.APPLICATION_STREAM_JSON)
-				.body(flux.publishOn(Schedulers.elastic()).subscribeOn(Schedulers.elastic()));
+	Flux<Todo> getTodos() {
+		return Flux.defer(() -> Flux.fromIterable(mapper.selectAll()))
+				.subscribeOn(Schedulers.elastic());
 	}
 
 }

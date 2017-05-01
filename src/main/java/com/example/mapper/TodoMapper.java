@@ -4,9 +4,9 @@ import com.example.domain.Todo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.session.ResultHandler;
+
+import java.util.List;
 
 @Mapper
 public interface TodoMapper {
@@ -19,7 +19,6 @@ public interface TodoMapper {
     Todo select(int id);
 
     @Select("SELECT id, title, details, finished FROM todo ORDER BY id")
-    @ResultType(Todo.class)
-    void collect(ResultHandler<Todo> handler);
+    List<Todo> selectAll();
 
 }
